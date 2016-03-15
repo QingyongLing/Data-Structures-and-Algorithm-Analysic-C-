@@ -1,12 +1,10 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include<time.h>
 
 struct AVL_Node;
 typedef struct AVL_Node *AVL_Position;
 typedef struct AVL_Node *AVL_Tree;
 #define AVL_ElementType int
-//#define max(a,b) (((a) < (b)) ? (b) : (a))
 
 AVL_Tree     AVL_MakeEmpty(AVL_Tree T);
 AVL_Position AVL_Find(AVL_ElementType x, AVL_Tree T);
@@ -81,7 +79,7 @@ AVL_Tree     AVL_Insert(AVL_ElementType x, AVL_Tree T)
 			T->Left = T->Right = NULL;
 		}
 	}
-	else if (x < T->Element)/*smaller -> Left*/
+	else if (x < T->Element) 
 	{
 		T->Left = AVL_Insert(x, T->Left);
 		if (AVL_Height(T->Left) - AVL_Height(T->Right) == 2)
@@ -90,7 +88,7 @@ AVL_Tree     AVL_Insert(AVL_ElementType x, AVL_Tree T)
 			else
 				T = DoubleRotateWithLeft(T);
 	}
-	else /*no smaller -> Right */
+	else if (x > T->Element)
 	{
 		T->Right = AVL_Insert(x, T->Right);
 		if (AVL_Height(T->Right) - AVL_Height(T->Left) == 2)
@@ -251,34 +249,20 @@ static AVL_Position DoubleRotateWithRight(AVL_Position k3)
 	return SingleRotateWithRight(k3);
 }
 
-void Rand_Test()
+void AVL_Test()
 {
-#define NUM 100
-	int num[NUM];
+	int num[] = { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
 	AVL_Tree p = NULL;
-	for (int i = 0; i < NUM; ++i)
+	for (int i = 0; i < sizeof(num) / sizeof(int); ++i)
 	{
-		num[i] = rand() % 100 + 1;
 		p = AVL_Insert(num[i], p);
 		AVL_BalanceTest(p);
 	}
-#define index 89
-	for (int i = 0; i < NUM; ++i)
+	for (int i = sizeof(num) / sizeof(int);i!=0; --i)
 	{
-		if (i == index)
-			continue;
 		p = AVL_Delete(num[i], p);
 		AVL_BalanceTest(p);
 	}
-	printf("%d ", num[index]);
-	AVL_Display(p);
-	printf("\n");
 	p = AVL_MakeEmpty(p);
-}
-void AVL_Test()
-{
-	srand((unsigned)time(0));
-	for (int i = 0; i < 100; ++i)
-		Rand_Test();
 }
 

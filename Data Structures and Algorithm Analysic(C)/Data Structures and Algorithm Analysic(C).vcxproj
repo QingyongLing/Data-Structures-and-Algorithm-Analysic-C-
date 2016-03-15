@@ -66,6 +66,7 @@
   <ItemGroup>
     <ClInclude Include="P4.3_binary_search_tree.h" />
     <ClInclude Include="P4.4_AVL_tree.h" />
+    <ClInclude Include="P4.5_Splay_Tree.h" />
     <ClInclude Include="Q2.12a.h" />
   </ItemGroup>
   <ItemGroup>

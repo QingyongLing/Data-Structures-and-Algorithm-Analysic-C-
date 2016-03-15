@@ -24,6 +24,9 @@
     <ClInclude Include="Q2.12a.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="P4.5_Splay_Tree.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="demo.c">

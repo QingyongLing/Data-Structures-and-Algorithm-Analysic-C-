@@ -1,3 +1,10 @@
+*.idb
+*.pdb
+*.ilk
+*.tlog
+*.lastbuildstate
+*.log
+*.ilk
 # Object files
 *.o
 *.ko

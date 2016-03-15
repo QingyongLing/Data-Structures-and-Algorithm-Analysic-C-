@@ -472,7 +472,7 @@ AVL_Tree     AVL_Insert(AVL_ElementType x, AVL_Tree T)
 			T->Left = T->Right = NULL;
 		}
 	}
-	else if (x < T->Element)/*smaller -> Left*/
+	else if (x < T->Element) 
 	{
 		T->Left = AVL_Insert(x, T->Left);
 		if (AVL_Height(T->Left) - AVL_Height(T->Right) == 2)
@@ -481,7 +481,7 @@ AVL_Tree     AVL_Insert(AVL_ElementType x, AVL_Tree T)
 			else
 				T = DoubleRotateWithLeft(T);
 	}
-	else /*no smaller -> Right */
+	else if (x > T->Element)
 	{
 		T->Right = AVL_Insert(x, T->Right);
 		if (AVL_Height(T->Right) - AVL_Height(T->Left) == 2)
@@ -494,35 +494,21 @@ AVL_Tree     AVL_Insert(AVL_ElementType x, AVL_Tree T)
 	return T;
 }
 ```
-注1：`T->Height = max(AVL_Height(T->Left), AVL_Height(T->Right)) + 1;`用于更新当前节点的高度信息。    
-1. 在恰好进行插入操作（申请内存）时，该操作等价于：T->Height = 0
+注：`T->Height = max(AVL_Height(T->Left), AVL_Height(T->Right)) + 1;`用于更新当前节点的高度信息。    
+1. 在恰好进行插入操作（申请内存）时，该操作等价于：T->Height = 0     
 2. 刚插入一个节点，那么除去空树的情况外，都需要通过`T->Left = AVL_Insert(x, T->Left);`和`T->Right = AVL_Insert(x, T->Right);`来递归插入。
 那么在插入时，如果引发了旋转，那么更新高度信息只需要用旋转操作即可，对于没有引发旋转的操作，用这一语句逐一更新高度。    
 
-注2： 在这里：
-```c
-else /*no smaller -> Right */
-	{
-		T->Right = AVL_Insert(x, T->Right);
-		if (AVL_Height(T->Right) - AVL_Height(T->Left) == 2)
-			if (x < T->Right->Element)
-				T = DoubleRotateWithRight(T);
-			else
-				T = SingleRotateWithRight(T);
-	}
-``` 
-这么写是为了让相等的值插入到右子树，`else`而不是`else if (x > T->Element)`是用于元素相等情况下插入，用`if (x < T->Right->Element)`进行判别是为了用正确的旋转方式，因为相等时插入到了右子树，应该用右右单旋转。
 
-
-删除的操作与插入是由异曲同工之妙的，删除操作可能不改变平衡也可能导致失衡。在插入的失衡中，分成LL、LR、RL、RR四种情况，分别用四种旋转纠正。那么跟插入的失衡相比有什么不同呢?
-我们先不管这个问题先来看一下删除的方式，在这里我们采用的依旧是二叉查找树的删除规则：
-1. 如果对应节点有两个子节点，那么用左子树最大值替代后再左子树删除最大值，或者用右子树的最小值替代后再右子树中删除最小值，然后返回根节点指针      
+删除的操作与插入是由异曲同工之妙的，删除操作可能不改变平衡也可能导致失衡。在插入的失衡中，分成LL、LR、RL、RR四种情况，分别用四种旋转纠正。那么跟插入的失衡相比有什么不同呢?     
+我们先不管这个问题先来看一下删除的方式，在这里我们采用的依旧是二叉查找树的删除规则：     
+1. 如果对应节点有两个子节点，那么用左子树最大值替代后再左子树删除最大值，或者用右子树的最小值替代后再右子树中删除最小值，然后返回根节点指针          
 2. 如果对应节点有一个子节点，那么直接删除，将对应子节点指针返回     
 3. 如果对应节点无子节点，直接删除，返回NULL    
 
 删除节点后必然会导致高度变化，因此要注意更新高度，那么现在来说失衡的情况：     
-在插入时，节点的高度差是连续变化的，一旦出现有失衡就要马上纠正，那么左右子节点高度相差2的情况肯定来自于原先相差1的情况，但是删除则多了一种情况。    
-以右子树高度多出2为例：   
+在插入时，节点的高度差是连续变化的，一旦出现有失衡就要马上纠正，那么左右子节点高度相差2的情况肯定来自于原先相差1的情况，但是删除则多了一种情况。        
+以右子树高度多出2为例：    
 右左双旋转的情况是：    
 `AVL_Height(k2->Right)-AVL_Height(k2->Left)==2`       
 `AVL_Height(k2->Right->Left)>AVL_Height(k2->Right->Right))`      
@@ -539,9 +525,9 @@ else /*no smaller -> Right */
 对于原本平衡的树，要使其不平衡，必然是原本高度低的子树删除了某个节点，使其高度下降，然后造成了失衡。      
 如图，左子树高度比右子树小，从左子树中删除一个节点（k2或k4），本例中假设删除k2，使左子树高度-1，同时我们知道k3的高度为2，单我们并不确定子树情况，只是可以确认k7、k8、k9和k0至少存在一个，因此在图中我们用虚线箭头表示。      
 对k1分别运用右左旋转和右右旋转，得出了相应的结果：    
-1. 对于`AVL_Height(k1->Right->Right)>AVL_Height(k1->Right->Left))`的情况（k7、k8不存在，k9、k0至少存在一个），即RR单旋转使其恢复平衡。
-2. 对于`AVL_Height(k1->Right->Right)<AVL_Height(k1->Right->Left))`的情况（k9、k0不存在，k7、k8至少存在一个），即RL双旋转使其恢复平衡。
-3. 对于`AVL_Height(k1->Right->Right)==AVL_Height(k1->Right->Left))`的情况（k7、k8至少存在一个，k9、k0至少存在一个），这时我们可以确定，k6是必然有子树的，那么当k7存在而k8不存在时，进行RL双旋转会导致k3失衡，而对于RR单旋转则不会有这个问题。
+1. 对于`AVL_Height(k1->Right->Right)>AVL_Height(k1->Right->Left))`的情况（k7、k8不存在，k9、k0至少存在一个），即RR单旋转使其恢复平衡。    
+2. 对于`AVL_Height(k1->Right->Right)<AVL_Height(k1->Right->Left))`的情况（k9、k0不存在，k7、k8至少存在一个），即RL双旋转使其恢复平衡。      
+3. 对于`AVL_Height(k1->Right->Right)==AVL_Height(k1->Right->Left))`的情况（k7、k8至少存在一个，k9、k0至少存在一个），这时我们可以确定，k6是必然有子树的，那么当k7存在而k8不存在时，进行RL双旋转会导致k3失衡，而对于RR单旋转则不会有这个问题。       
 所以我们对这种情况采用RL双旋转是无法完全解决的，而采用RR单旋转是可以解决的。    
     
 同理，对于删除了右子树节点导致的失衡，采用的纠正方式是类似的，当`AVL_Height(k1->Left->Left)==AVL_Height(k1->Left->Right))`时，采用LL单旋转可以纠正失衡。       
