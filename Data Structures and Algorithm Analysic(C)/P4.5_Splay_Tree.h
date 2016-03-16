@@ -46,7 +46,6 @@ ST_Position ST_FindGrandson(SPLAY_ElementType x, ST_Tree T)
 	if (T->Element == x)
 		return T;
 
-	//ST_Position pos;
 	if (x > T->Element)
 		T->Right = ST_FindGrandson(x, T->Right);
 	else
@@ -133,6 +132,8 @@ ST_Tree     ST_Delete(SPLAY_ElementType x, ST_Tree T)
 	if (T == NULL)
 		return NULL;
 	T = ST_Find(x, T);
+	if (T->Element != x)
+		return T;
 	ST_Tree L = T->Left, R = T->Right;
 	free(T);
 	if (L != NULL)
@@ -147,8 +148,6 @@ ST_Tree     ST_Delete(SPLAY_ElementType x, ST_Tree T)
 		R->Left = L;
 		return R;
 	}
-	else
-		return NULL; 
 }
 void           ST_Display(ST_Tree p)
 {
