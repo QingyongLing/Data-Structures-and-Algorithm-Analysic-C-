@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
-
+#include <assert.h>
 struct ST_Node;
 typedef struct ST_Node *ST_Position;
 typedef struct ST_Node *ST_Tree;
@@ -45,7 +45,7 @@ ST_Position ST_FindGrandson(SPLAY_ElementType x, ST_Tree T)
 		return NULL;
 	if (T->Element == x)
 		return T;
-
+	
 	if (x > T->Element)
 		T->Right = ST_FindGrandson(x, T->Right);
 	else
@@ -132,22 +132,26 @@ ST_Tree     ST_Delete(SPLAY_ElementType x, ST_Tree T)
 	if (T == NULL)
 		return NULL;
 	T = ST_Find(x, T);
-	if (T->Element != x)
-		return T;
-	ST_Tree L = T->Left, R = T->Right;
-	free(T);
-	if (L != NULL)
+	if (T->Element == x)
 	{
-		L = ST_FindMax(L);
-		L->Right = R;
-		return L;
+		ST_Tree L = T->Left, R = T->Right;
+		free(T);
+		if (L != NULL)
+		{
+			L = ST_FindMax(L);
+			L->Right = R;
+			return L;
+		}
+		else if (R != NULL)
+		{
+			R = ST_FindMin(R);
+			R->Left = L;
+			return R;
+		}
+		else
+			return NULL;
 	}
-	else if (R != NULL)
-	{
-		R = ST_FindMin(R);
-		R->Left = L;
-		return R;
-	}
+	return T;
 }
 void           ST_Display(ST_Tree p)
 {
@@ -248,7 +252,7 @@ static ST_Position SplayingRightRight(ST_Position k3)
 	k1->Left = k2;
 	return k1;
 }
-int Num_in_Array(int* a, int num, int N)
+int ST_Num_In_Array(int* a, int num, int N)
 {
 	int in = 0;
 	for (int i = 0; i < N; ++i)
@@ -260,36 +264,80 @@ int Num_in_Array(int* a, int num, int N)
 		}
 	}
 	return in;
+} 
+void ST_Tree_Rightful_Test(ST_Tree p)
+{
+	if (p != NULL)
+	{
+		if (p->Left != NULL)
+			assert(p->Element>p->Left->Element);
+		if (p->Right != NULL)
+			assert(p->Element < p->Right->Element);
+		ST_Tree_Rightful_Test(p->Left);
+		ST_Tree_Rightful_Test(p->Right);
+	}
 }
-
 
 void ST_Test()
 {
 	srand((unsigned)time(0));
 #define N 100 
-	//int num[7] = { 7, 6, 5, 4, 3, 2, 1 };
 	int num[N];
-	for (int i = 0; i < N; )
+	int maxnum, minnum;
+	for (int i = 0; i < N;)
 	{
 		int temp = rand() % 300 + 1;
-		if (Num_in_Array(num, temp, i) == 0)
+		if (i == 0)
+		{
+			maxnum = minnum = temp;
+		}
+		if (ST_Num_In_Array(num, temp, i) == 0)
 			num[i++] = temp;
+		maxnum = temp > maxnum ? temp : maxnum;
+		minnum = temp < minnum ? temp : minnum;
 	}
+
 	ST_Tree p = NULL;
 	for (int i = 0; i < N; ++i)
+	{
 		p = ST_Insert(num[i], p);
+		ST_Tree_Rightful_Test(p);
+	}
 	ST_Display(p);
 	printf("\n");
+	
+	for (int i = 0; i < 100; ++i)
+	{
+		int temp = rand() % 300 + 400;
+		int lastroot = p->Element;
+		p = ST_Find(temp, p);
+		assert(lastroot == p->Element);
+	}
+
 	for (int i = 0; i < 100; ++i)
 	{
 		int temp = rand() % 100;
 		p = ST_Find(num[temp], p);
+		assert(num[temp] == p->Element);
 		p = ST_FindMax(p);
+		assert(maxnum == p->Element);
 		p = ST_FindMin(p);
+		assert(minnum == p->Element);
 	}
 	
-	ST_Display(p);
+	for (int i = 0; i < 100; ++i)
+	{
+		int temp = rand() % 300 + 400;
+		int lastroot = p->Element;
+		p = ST_Delete(temp, p);
+		assert(lastroot == p->Element);
+	}
+
 	for (int i = 0; i < N; ++i)
+	{
 		p = ST_Delete(num[i], p);
+		ST_Tree_Rightful_Test(p);
+	}
 	p = ST_MakeEmpty(p);
+	assert(p == NULL);
 }

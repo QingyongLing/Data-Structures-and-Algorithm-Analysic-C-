@@ -602,6 +602,192 @@ AVL_Tree     AVL_Delete(AVL_ElementType x, AVL_Tree T)
 注1： 此处`T->Height = max(AVL_Height(T->Left), AVL_Height(T->Right)) + 1;`放在旋转操作前面，这是因为四种旋转内部均进行了高度信息的调整，所以先后顺序可以无关，即使用max计算错误也会由旋转操作纠正。     
 注2： 进行旋转操作的代码与上文中对应，对于`AVL_Height(k1->Right->Right)==AVL_Height(k1->Right->Left))`和`AVL_Height(k1->Left->Left)==AVL_Height(k1->Left->Right))`两种情况分别采用右右单旋转和左左单旋转。     
 
+#### 2.4 伸展树     
+伸展树是一种相对简单的数据结构，它保证从空树开始任意连续M次对树的操作最多花费O(MlogN)时间。     
+伸展树的基本想法：当一个节点被访问后，它要经过一系列AVL树的旋转被放到根上。注意，如果一个节点很深，那么在其路径上就存在许多节点也相对比较深，通过重新构造可以使对所有这些节点的进一步访问所花费的时间变少。
+因此，如果节点过深，那么我们还要求重新构造应具有平衡这棵树（到某种程度）的作用。      
+展开（查找时）：     
+展开的操作类似于旋转，不过在旋转如何实施上我们有些选择的余地。与AVL树的相比，有些差异。      
+1. 如果所查找的节点位于整棵树的根节点的子节点      
+对于这种情况采用AVL的单旋转，对于节点为根节点的左子节点情况用左单旋转，对于节点为根节点的右子节点的情况用右单旋转，所查找节点成为新的根节点           
+2. 如果所查找的节点含有祖父节点，而且是祖父节点的左子节点的右子节点，或者是祖父节点的右子节点的左子节点     
+对于这种情况，采用AVL的双旋转，此时所查找的节点成为旋转后的新树的根节点。         
+3. 如果所查找的节点含有祖父节点，而且是祖父节点的左子节点的左子节点，或者是祖父节点的右子节点的右子节点      
+对于这种情况，采用一种新的方式，将所查找的节点旋转至新树的根处：     
+![img](/img/ch2/ST_Splaying_1.png)   
+例如，要查找的节点为G，则旋转为右图形式；要查找的为x则旋转为左图形式          
+
+插入，按照二叉搜索树的插入方式插入     
+删除，我们先访问（查找）要删除的节点，将该节点展开至根处，删除该节点，得到两颗子树，在左子树中查找最大值节点，然后将右子树作为左子树根节点的右子树（或者右子树中查找最小值节点，然后将左子树作为右子树根节点的左子树），注意左右子树均为空的情况存在。
+
+插入的代码与二叉搜索树一致，先看展开，采用AVL树单旋转和双旋转的不再赘述，旋转在伸展树中的目的是将查找的节点上移到根节点：          
+```c
+static ST_Position SplayingLeftLeft(ST_Position k3)
+{
+	/*        k3                 k1                 */
+	/*       /  \               /  \                */
+	/*      k2   d             a    k2              */
+	/*     /  \                    /  \             */
+	/*    k1   c       -->        b    k3           */
+	/*   /  \                         / \           */
+	/*  a    b                       c   d          */
+	/*                                              */
+	ST_Position k2 = k3->Left;
+	ST_Position k1 = k3->Left->Left;
+	k3->Left = k2->Right;
+	k2->Right = k3;
+	k2->Left = k1->Right;
+	k1->Right = k2;
+	return k1;
+}
+static ST_Position SplayingRightRight(ST_Position k3)
+{
+	/*        k1                 k3                 */
+	/*       /  \               /  \                */
+	/*      k2   d             a    k2              */
+	/*     /  \         <--        /  \             */
+	/*    k3   c                  b    k1           */
+	/*   /  \                         / \           */
+	/*  a    b                       c   d          */
+	/*                                              */
+	ST_Position k2 = k3->Right;
+	ST_Position k1 = k3->Right->Right;
+	k3->Right = k2->Left;
+	k2->Left = k3;
+	k2->Right = k1->Left;
+	k1->Left = k2;
+	return k1;
+}
+```
+对于查找的过程，可以分成以下几种情况：   
+1. 空树 
+2. 所查找的节点恰好在根节点     
+3. 所查找的节点恰好在根节点的子节点      
+4. 所查找的节点与根节点的距离超过2      
+5. 所查找的节点不存在   
+   
+解决方式：  
+1. 返回NULL    
+2. 在根节点：直接返回根节点      
+3. 在根节点子节点：用单旋转，返回新的根节点     
+4. 距离超过2：递归，回退到所查找节点的祖父节点（回退到父节点时也不作处理），对四种情况分别进行展开，如果距离为偶数，可以展开至根节点（情况1），如果距离为奇数，那么最后会回到所查找的节点为根节点的子节点的情况（情况2）        
+5. 对于界节点不存在的情况不应该对树做任何改动，应直接返回原来的根节点         
+  
+查找的代码为：
+```c
+ST_Position ST_FindGrandson(SPLAY_ElementType x, ST_Tree T)
+{
+	if (T == NULL)
+		return NULL;
+        
+    /*可以有，也可以没有*/
+	if (T->Element == x)
+		return T;
+	
+	if (x > T->Element)
+		T->Right = ST_FindGrandson(x, T->Right);
+	else
+		T->Left = ST_FindGrandson(x, T->Left);
+	
+	if (T->Left != NULL)
+	{
+		if (T->Left->Element == x)
+			return T;
+		else if (T->Left->Left != NULL&&T->Left->Left->Element == x)
+			return SplayingLeftLeft(T);
+		else if (T->Left->Right != NULL&&T->Left->Right->Element == x)
+			return SplayingLeftRight(T);
+	}
+	if (T->Right != NULL)
+	{
+		if (T->Right->Element == x)
+			return T;
+		else if (T->Right->Right != NULL&&T->Right->Right->Element == x)
+			return SplayingRightRight(T);
+		else if (T->Right->Left != NULL&&T->Right->Left->Element == x)
+			return SplayingRightLeft(T);
+	}
+    
+    /*用于找不到相应节点返回T*/
+	return T;
+}
+ST_Position ST_Find(SPLAY_ElementType x, ST_Tree T)
+{
+	if (T == NULL)
+		return NULL;
+	if (T->Element == x)
+		return T;
+	T = ST_FindGrandson(x, T);
+	if (T->Left != NULL&&T->Left->Element == x)
+		return SplayingLeft(T);
+	else if (T->Right != NULL&&T->Right->Element == x)
+		return SplayingRight(T);
+	return T;
+}
+ST_Position ST_FindMin(ST_Tree T)
+{
+	if (T != NULL)
+	{
+		ST_Position root = T;
+		while (T->Left != NULL)
+			T = T->Left;
+		return ST_Find(T->Element,root);
+	}
+	return T;
+}
+ST_Position ST_FindMax(ST_Tree T)
+{
+	if (T != NULL)
+	{
+		ST_Position root = T;
+		while (T->Right != NULL)
+			T = T->Right;
+		return ST_Find(T->Element, root);
+	}
+	return T;
+}
+```
+注1： 用单旋转的情况只存在于所查节点为根节点的儿子的情况，分别是原本就为树的根节点的儿子，或者是经过`ST_FindGrandson`调整，成为了根节点儿子。      
+注2： 查找最大最小值，通过找出最大最小值然后调用`ST_Find`的方式进行。       
+
+删除的原理已经说过，代码是:     
+```c
+ST_Tree     ST_Delete(SPLAY_ElementType x, ST_Tree T)
+{
+	if (T == NULL)
+		return NULL;
+	T = ST_Find(x, T);
+	if (T->Element == x)
+	{
+		ST_Tree L = T->Left, R = T->Right;
+		free(T);
+		if (L != NULL)
+		{
+			L = ST_FindMax(L);
+			L->Right = R;
+			return L;
+		}
+		else if (R != NULL)
+		{
+			R = ST_FindMin(R);
+			R->Left = L;
+			return R;
+		}
+		else
+			return NULL;
+	}
+	return T;
+}
+```
+删除的情况可以有以下划分：   
+1. 空树->返回NULL      
+2. 仅有根节点->删除后返回NULL      
+3. 除根节点外找到了进行删除->查找，删除根节点，按照左右子树是否为空进行处理，返回根节点指针       
+4. 找不到的进行删除->直接返回根节点，对于找不到的情况`ST_Find`不会改变树的结构       
+
+
+#### 2.5 B树
+      
 
 
 
