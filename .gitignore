@@ -1,3 +1,7 @@
+/Debug/*
+/Release/*
+/Data Structures and Algorithm Analysic(C)/Release/*
+/Data Structures and Algorithm Analysic(C)/Debug/*
 *.idb
 *.pdb
 *.ilk
@@ -11,6 +15,7 @@
 *.obj
 *.elf
 *.sdf
+*.opensdf
 
 # Precompiled Headers
 *.gch
