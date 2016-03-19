@@ -30,9 +30,27 @@
     <ClInclude Include="P4.7_B_Tree.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="Draw_Binary_Tree.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="CommonNode.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="demo.c">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="P4.3_binary_search_tree.c">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="P4.4_AVL_tree.c">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Splay_Tree.c">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Draw_Binary_Tree.c">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
