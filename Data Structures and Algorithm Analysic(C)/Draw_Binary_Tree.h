@@ -15,7 +15,7 @@ void  Draw_ST_Tree_int(struct Node *p, char *format, char *filename);
 Agnode_t* AddNode_Binary_tree_int(Agraph_t *g, struct Node *p);
 Agnode_t* AddNode_AVL_tree_int(Agraph_t *g, AVL_Tree p);
 
-void  MakeGif(char* name, int start, int end);
+void  MakeGif(char* format,char* name, int start, int end);
 /*write the function of other type*/
 
 #endif

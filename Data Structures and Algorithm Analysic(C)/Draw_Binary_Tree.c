@@ -104,42 +104,30 @@ Agnode_t* AddNode_AVL_tree_int(Agraph_t *g, AVL_Tree p)
 	return NULL;
 }
 
-void  MakeGif(char* name, int start, int end)
+void  MakeGif(char* format, char* name, int start, int end)
 {
-	char args[1000]="gifsicle.exe ";
-	int index = strlen(args);
+	char args[1000]="gifsicle.exe -d 100 ";
+	int  head = strlen(args);
 	for (int i = start; i < end; ++i)
 	{
-		char *p = name;
-		while (*p != '\0')
-		{
-			args[index++] = *p;
-			++p;
-		}
-		char num[10] = "";
-		_itoa(i, num, 10);
-		char *p_int_to_str = num;
-		while (*p_int_to_str != '\0')
-		{
-			args[index++] = *p_int_to_str;
-			++p_int_to_str;
-		}
-		args[index++] = '.';
-		args[index++] = 'g';
-		args[index++] = 'i';
-		args[index++] = 'f';
-		args[index++] = ' ';
+		strncat(args, name, strlen(name));
+		char gif_index_str[10] = "";
+		_itoa(i, gif_index_str, 10);
+		strncat(args, gif_index_str, strlen(gif_index_str));
+		strncat(args, ".", strlen("."));
+		strncat(args, format, strlen(format));
+		strncat(args, " ", strlen(" "));
 	}
-	args[index++] = '>';
-	char *out = "AVL";
-	while (*out != '\0')
-	{
-		args[index++] = *out++;
-	}
-	args[index++] = '.';
-	args[index++] = 'g';
-	args[index++] = 'i';
-	args[index++] = 'f';
-	args[index] = '\0';
+	strncat(args, ">", strlen(">"));
+	strncat(args, name, strlen(name));
+	strncat(args, ".", strlen("."));
+	strncat(args, format, strlen(format));
 	system(args);
+	char *p = args;
+	while (*p != '>')++p;
+	*p = '\0';
+	p = args + head;
+	char del[1000] = "del ";
+	strncat(del, p, strlen(p));
+	system(del);
 }

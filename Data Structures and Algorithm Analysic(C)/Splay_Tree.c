@@ -252,10 +252,10 @@ void ST_Tree_Rightful_Test(ST_Tree p)
 void ST_Test()
 {
 	srand((unsigned)time(0));
-#define ST_N 100 
-	int num[ST_N];
+#define AVL_N 100 
+	int num[AVL_N];
 	int maxnum, minnum;
-	for (int i = 0; i < ST_N;)
+	for (int i = 0; i < AVL_N;)
 	{
 		int temp = rand() % 300 + 1;
 		if (i == 0)
@@ -269,7 +269,7 @@ void ST_Test()
 	}
 
 	ST_Tree p = NULL;
-	for (int i = 0; i < ST_N; ++i)
+	for (int i = 0; i < AVL_N; ++i)
 	{
 		p = ST_Insert(num[i], p);
 		ST_Tree_Rightful_Test(p);
@@ -304,7 +304,7 @@ void ST_Test()
 		assert(lastroot == p->Element);
 	}
 
-	for (int i = 0; i < ST_N; ++i)
+	for (int i = 0; i < AVL_N; ++i)
 	{
 		p = ST_Delete(num[i], p);
 		ST_Tree_Rightful_Test(p);
