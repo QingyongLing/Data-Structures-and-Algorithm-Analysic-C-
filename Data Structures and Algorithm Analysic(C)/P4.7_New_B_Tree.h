@@ -9,9 +9,7 @@ struct BT_Node;
 typedef struct BT_Node *BT_Position;
 typedef struct BT_Node *BT_Tree;
 
-/*The Min SON_M is 4*/
 #define KEY_MAX SON_M-1
-#define LEAF_N_MAX SON_M
 #define SON_M 4
 #define BT_ElementType int
 #define BT_bool  char
@@ -24,7 +22,7 @@ struct BT_Node
 	unsigned char   Keyword_Num;
 	BT_Position     Parent;
 	BT_Position     Son[SON_M];
-	BT_ElementType  Keyword[KEY_MAX + 1];
+	BT_ElementType  Keyword[KEY_MAX];
 };
 
 BT_bool     BT_Is_leaf(BT_Position T);
@@ -156,8 +154,8 @@ void        BT_Add_Key_or_Son(BT_Position p, int key, BT_Position son)
 {
 	if (p != NULL)
 	{
-		int index = BT_InsertIndex(p, key);
-
+		int index = BT_InsertIndex(p,key);
+        
 		for (int i = p->Keyword_Num; i > index; --i)
 			p->Keyword[i] = p->Keyword[i - 1];
 		p->Keyword[index] = key;
@@ -193,7 +191,7 @@ BT_bool     BT_KeywordMoveLeft(BT_Position p, BT_ElementType x, int start_index,
 		int move_index = start_index - 1;
 		for (int i = before_end_index - 1; i > start_index - 1; --i)
 		{
-			if (p->Son[i]->Keyword_Num < LEAF_N_MAX)
+			if (p->Son[i]->Keyword_Num < KEY_MAX)
 			{
 				move_index = i;
 				break;
@@ -235,7 +233,7 @@ BT_bool     BT_KeywordMoveRight(BT_Position p, BT_ElementType x, int start_index
 		int move_index = start_index;
 		for (int i = start_index + 1; i < before_end_index + 1; ++i)
 		{
-			if (p->Son[i]->Keyword_Num < LEAF_N_MAX)
+			if (p->Son[i]->Keyword_Num < KEY_MAX)
 			{
 				move_index = i;
 				break;
@@ -246,17 +244,17 @@ BT_bool     BT_KeywordMoveRight(BT_Position p, BT_ElementType x, int start_index
 			for (int i = move_index; i > start_index + 1; --i)
 			{
 				BT_Add_Key_or_Son(p->Son[i], p->Keyword[i - 1], NULL);
-				p->Keyword[i - 1] = p->Son[i - 1]->Keyword[LEAF_N_MAX - 1];
+				p->Keyword[i - 1] = p->Son[i - 1]->Keyword[KEY_MAX - 1];
 				BT_Leaf_Del_Keyword(p->Keyword[i - 1], p->Son[i - 1]);
 			}
 			BT_Add_Key_or_Son(p->Son[start_index + 1], p->Keyword[start_index], NULL);
-			if (x > p->Son[start_index]->Keyword[LEAF_N_MAX - 1])
+			if (x > p->Son[start_index]->Keyword[KEY_MAX - 1])
 			{
 				p->Keyword[start_index] = x;
 			}
 			else
 			{
-				p->Keyword[start_index] = p->Son[start_index]->Keyword[LEAF_N_MAX - 1];
+				p->Keyword[start_index] = p->Son[start_index]->Keyword[KEY_MAX - 1];
 				BT_Leaf_Del_Keyword(p->Keyword[start_index], p->Son[start_index]);
 				BT_Add_Key_or_Son(p->Son[start_index], x, NULL);
 			}
@@ -274,7 +272,7 @@ BT_Tree     BT_Split(BT_Position p)
 {
 	if (p != NULL)
 	{
-		if ((BT_Is_leaf(p) == BT_false&&p->Keyword_Num == KEY_MAX) | (BT_Is_leaf(p) == BT_true&&p->Keyword_Num == LEAF_N_MAX))
+		if (p->Keyword_Num == KEY_MAX)
 		{
 			BT_Position Father, Brother;
 			Brother = BT_Make_BT_Node();
@@ -294,7 +292,7 @@ BT_Tree     BT_Split(BT_Position p)
 			}
 			p->Keyword_Num = Mid;
 
-			if (BT_Is_root(p) == BT_true)
+			if (BT_Is_root(p)==BT_true)
 			{
 				Father = BT_Make_BT_Node();
 				Father->Son[0] = p;
@@ -328,10 +326,10 @@ BT_Tree     BT_Insert(BT_ElementType x, BT_Tree T)
 	}
 	else
 	{
-		BT_Position Pos_insert = T;
+		BT_Position Pos_insert=T;
 		int index;
 		while (BT_Is_leaf(Pos_insert) == BT_false)
-		{
+		{	
 			index = Pos_insert->Keyword_Num;
 			for (int i = 0; i < Pos_insert->Keyword_Num; ++i)
 			{
@@ -341,9 +339,12 @@ BT_Tree     BT_Insert(BT_ElementType x, BT_Tree T)
 					break;
 				}
 			}
+			if (index != Pos_insert->Keyword_Num)
+				if (x>Pos_insert->Keyword[index])
+					printf("What The fuck index");
 			Pos_insert = Pos_insert->Son[index];
 		}
-		if (Pos_insert->Keyword_Num < LEAF_N_MAX)
+		if (Pos_insert->Keyword_Num < KEY_MAX)
 		{
 			BT_Add_Key_or_Son(Pos_insert, x, NULL);
 		}
@@ -362,7 +363,7 @@ BT_Tree     BT_Insert(BT_ElementType x, BT_Tree T)
 		}
 		BT_Tree temp = T;
 		while (temp->Parent != NULL)
-			temp = temp->Parent;
+	 		temp=temp->Parent;
 		return temp;
 	}
 }
@@ -376,7 +377,7 @@ void        BT_Display(BT_Tree T)
 			if (i < T->Keyword_Num)
 			{
 				if (BT_Is_leaf(T))
-					printf(" %d", T->Keyword[i]);
+				    printf(" %d", T->Keyword[i]);
 				else
 					printf(" (%d) ", T->Keyword[i]);
 			}
@@ -401,23 +402,21 @@ int BT_Num_In_Array(int* a, int num, int n)
 }
 Agnode_t * Add_Node(Agraph_t *g, BT_Tree T)
 {
-	if (T != NULL)
+	if (T!= NULL)
 	{
-		char label[300] = "";
+		char label[300]="";
 		for (int i = 0; i < T->Keyword_Num; ++i)
 		{
 			char gif_index_str[10] = "";
 			_itoa(T->Keyword[i], gif_index_str, 10);
 			strncat(label, gif_index_str, strlen(gif_index_str));
-			if (i < T->Keyword_Num - 1)
+			if (i<T->Keyword_Num-1)
 				strncat(label, " | ", strlen(" | "));
 		}
 		//agsafeset(Fa, "label", label, "");
 		Agnode_t *Fa = agnode(g, label, 1);
 		for (int i = 0; i < T->Keyword_Num + 1; ++i)
 		{
-			if (BT_Is_leaf(T) == BT_true&&i == T->Keyword_Num)
-				break;
 			Agnode_t *son = Add_Node(g, T->Son[i]);
 			if (son != NULL)
 			{
@@ -432,12 +431,12 @@ Agnode_t * Add_Node(Agraph_t *g, BT_Tree T)
 void B_Tree_Test2()
 {
 	srand((unsigned)time(0));
-#define B_N  100
+#define B_N  6
 	int num[B_N];
 	for (int i = 0; i < B_N;)
 	{
-		int temp = rand() % 100 + 1;
-		if (ST_Num_In_Array(num, temp, i) == 0)
+		int temp = rand() % 200 + 1;
+		if (BT_Num_In_Array(num, temp, i) == 0)
 			num[i++] = temp;
 	}
 
@@ -448,6 +447,7 @@ void B_Tree_Test2()
 	for (int i = 0; i < sizeof(num) / sizeof(int); ++i)
 	{
 		T = BT_Insert(num[i], T);
+		
 // 		Agraph_t *g;
 // 		GVC_t *gvc;
 // 
@@ -483,7 +483,7 @@ void B_Tree_Test2()
 
 	gvLayout(gvc, g, "dot");
 	gvRenderFilename(gvc, g, "gif", "Node.gif");
-
+	
 	gvFreeLayout(gvc, g);
 	agclose(g);
 	gvFreeContext(gvc);
