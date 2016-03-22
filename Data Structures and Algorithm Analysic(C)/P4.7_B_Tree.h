@@ -29,22 +29,43 @@ struct BT_Node
 
 BT_bool     BT_Is_leaf(BT_Position T);
 BT_bool     BT_Is_root(BT_Position T);
+BT_bool     BT_Is_Full(BT_Position p);
 BT_Position BT_Make_BT_Node();
 BT_Tree     BT_MakeEmpty(BT_Tree T);
-int         BT_InsertIndex(BT_Position T, BT_ElementType x);
-BT_Tree     BT_Split(BT_Position p);
 BT_Tree     BT_Insert(BT_ElementType x, BT_Tree T);
+void        BT_Display(BT_Tree T);
+
+BT_Tree     BT_Add_And_Split(BT_Position p, int add_key, BT_Position add_son);
 
 void        BT_Leaf_Del_Keyword(BT_ElementType x, BT_Position p);
-int         BT_Element_Index(BT_ElementType x, BT_Position p);
 void        BT_Add_Key_or_Son(BT_Position p, int key, BT_Position son);
+int         Common_Insert_Index(BT_ElementType* a, int Num, BT_ElementType x);
+int         Common_Element_Index(BT_ElementType* a, int Num, BT_ElementType x);
+void        BT_Element_Insert(BT_ElementType* Key_array, BT_Position *Son_array, int Num, BT_ElementType key, BT_Position son);
 
 BT_bool     BT_Leaf_Key_Move_Insert(BT_ElementType x, BT_Position Father, int index);
 BT_bool     BT_KeywordMoveLeft(BT_Position p, BT_ElementType x, int start, int before_end);
 BT_bool     BT_KeywordMoveRight(BT_Position p, BT_ElementType x, int start, int before_end);
 
-void        BT_Display(BT_Tree T);
-
+BT_bool     BT_Is_Full(BT_Position p)
+{
+	if (p != NULL)
+	{
+		if (BT_Is_root(p)==BT_true && p->Keyword_Num == KEY_MAX)
+			return BT_true;
+		else if (BT_Is_leaf(p) == BT_true && p->Keyword_Num == LEAF_N_MAX)
+			return BT_true;
+		else if (BT_Is_leaf(p) == BT_false && p->Keyword_Num == KEY_MAX)
+			return BT_true;
+		return BT_false;
+	}
+	else
+	{
+		printf("BT_Is_Full: p is NULL");
+		return BT_false;
+	}
+	
+}
 BT_bool     BT_Is_leaf(BT_Position T)
 {
 	if (T != NULL)
@@ -89,14 +110,15 @@ BT_Tree     BT_MakeEmpty(BT_Tree T)
 	}
 	return T;
 }
-int         BT_InsertIndex(BT_Position T, BT_ElementType x)
+
+int         Common_Insert_Index(BT_ElementType* a, int Num, BT_ElementType x)
 {
-	if (T != NULL)
+	if (a != NULL)
 	{
-		int index = T->Keyword_Num;
-		for (int i = 0; i < T->Keyword_Num; ++i)
+		int index = Num;
+		for (int i = 0; i < Num; ++i)
 		{
-			if (x < T->Keyword[i])
+			if (x < a[i])
 			{
 				index = i;
 				break;
@@ -106,18 +128,18 @@ int         BT_InsertIndex(BT_Position T, BT_ElementType x)
 	}
 	else
 	{
-		printf("BT_InsertIndex: Bad Pointer T");
+		printf("Common_Insert_Index: Bad Pointer a");
 		return -1;
 	}
 }
-int         BT_Element_Index(BT_ElementType x, BT_Position p)
+int         Common_Element_Index(BT_ElementType* a, int Num, BT_ElementType x)
 {
-	if (p != NULL)
+	if (a != NULL)
 	{
 		int index = -1;
-		for (int i = 0; i < p->Keyword_Num; ++i)
+		for (int i = 0; i < Num; ++i)
 		{
-			if (p->Keyword[i] == x)
+			if (a[i] == x)
 			{
 				index = i;
 				break;
@@ -127,7 +149,7 @@ int         BT_Element_Index(BT_ElementType x, BT_Position p)
 	}
 	else
 	{
-		printf("BT_Element_Index: Bad Pointer T");
+		printf("Common_Element_Index: Bad Pointer a");
 		return -1;
 	}
 }
@@ -135,7 +157,7 @@ void        BT_Leaf_Del_Keyword(BT_ElementType x, BT_Position p)
 {
 	if (BT_Is_leaf(p) == BT_true)
 	{
-		int index = BT_Element_Index(x, p);
+		int index = Common_Element_Index(p->Keyword, p->Keyword_Num, x);
 		if (index != -1)
 		{
 			for (int i = index; i < p->Keyword_Num; ++i)
@@ -152,23 +174,26 @@ void        BT_Leaf_Del_Keyword(BT_ElementType x, BT_Position p)
 		printf("BT_Leaf_Del_Keyword: p is not a Leaf");
 	}
 }
+void        BT_Element_Insert(BT_ElementType* Key_array, BT_Position *Son_array, int Key_Num, BT_ElementType key, BT_Position son)
+{
+	int index = Common_Insert_Index(Key_array, Key_Num, key);
+	for (int i = Key_Num; i > index; --i)
+	{
+		Key_array[i] = Key_array[i - 1];
+		if (son != NULL)
+			Son_array[i + 1] = Son_array[i];
+	}
+	Key_array[index] = key;
+	if (son != NULL)
+		Son_array[index + 1] = son;
+}
 void        BT_Add_Key_or_Son(BT_Position p, int key, BT_Position son)
 {
 	if (p != NULL)
 	{
-		int index = BT_InsertIndex(p, key);
-
-		for (int i = p->Keyword_Num; i > index; --i)
-			p->Keyword[i] = p->Keyword[i - 1];
-		p->Keyword[index] = key;
+		BT_Element_Insert(p->Keyword, p->Son, p->Keyword_Num, key, son);
 		if (son != NULL)
-		{
-			for (int i = p->Keyword_Num; i > index; --i)
-				p->Son[i + 1] = p->Son[i];
-			p->Son[index + 1] = son;
-			/*change the parent*/
 			son->Parent = p;
-		}
 		++p->Keyword_Num;
 	}
 	else
@@ -176,7 +201,6 @@ void        BT_Add_Key_or_Son(BT_Position p, int key, BT_Position son)
 		printf("BT_Add_Key_or_Son: p is NULL");
 	}
 }
-
 
 BT_bool     BT_Leaf_Key_Move_Insert(BT_ElementType x, BT_Position Father, int Leaf_index)
 {
@@ -270,52 +294,80 @@ BT_bool     BT_KeywordMoveRight(BT_Position p, BT_ElementType x, int start_index
 	return BT_false;
 }
 
-BT_Tree     BT_Split(BT_Position p)
+BT_Tree     BT_Add_And_Split(BT_Position p, int add_key, BT_Position add_son)
 {
 	if (p != NULL)
 	{
-		if ((BT_Is_leaf(p) == BT_false&&p->Keyword_Num == KEY_MAX) | (BT_Is_leaf(p) == BT_true&&p->Keyword_Num == LEAF_N_MAX))
+		if (BT_Is_Full(p))
 		{
-			BT_Position Father, Brother;
-			Brother = BT_Make_BT_Node();
+			BT_Position     Son[SON_M + 1];
+			BT_ElementType  Keyword[LEAF_N_MAX + 1];
 
-			int Mid = p->Keyword_Num / 2;
+			for (int i = 0; i < p->Keyword_Num; ++i)
+			{
+				Keyword[i] = p->Keyword[i];
+				if (BT_Is_leaf(p) == BT_false)
+					Son[i] = p->Son[i];
+			}
+			if (BT_Is_leaf(p) == BT_false)
+				Son[p->Keyword_Num] = p->Son[p->Keyword_Num];
+			BT_Element_Insert(Keyword, Son, p->Keyword_Num, add_key, add_son);
+
+			int Mid = (p->Keyword_Num + 1) / 2;
+
+			int Key_Num = p->Keyword_Num;
+			p->Keyword_Num = 0;
 			if (BT_Is_leaf(p) == BT_false)
 			{
-				Brother->Son[0] = p->Son[Mid + 1];
-				p->Son[Mid + 1]->Parent = Brother;
+				p->Son[0] = Son[0];
+				Son[0]->Parent = p;
 			}
-			for (int i = Mid + 1; i < p->Keyword_Num; ++i)
+			for (int i = 0; i < Mid; ++i)
 			{
-				if (BT_Is_leaf(p))
-					BT_Add_Key_or_Son(Brother, p->Keyword[i], NULL);
+				if (BT_Is_leaf(p) == BT_false)
+					BT_Add_Key_or_Son(p, Keyword[i], Son[i + 1]);
 				else
-					BT_Add_Key_or_Son(Brother, p->Keyword[i], p->Son[i + 1]);
+					BT_Add_Key_or_Son(p, Keyword[i], NULL);
 			}
-			p->Keyword_Num = Mid;
+			BT_Position  Brother = BT_Make_BT_Node();
+			if (BT_Is_leaf(p) == BT_false)
+			{
+				Brother->Son[0] = Son[Mid + 1];
+				Son[Mid + 1]->Parent = Brother;
+			}
+			for (int i = Mid + 1; i < Key_Num + 1; ++i)
+			{
+				if (BT_Is_leaf(p) == BT_false)
+					BT_Add_Key_or_Son(Brother, Keyword[i], Son[i + 1]);
+				else
+					BT_Add_Key_or_Son(Brother, Keyword[i], NULL);
+			}
+
 
 			if (BT_Is_root(p) == BT_true)
 			{
-				Father = BT_Make_BT_Node();
+				BT_Position Father = BT_Make_BT_Node();
 				Father->Son[0] = p;
 				p->Parent = Father;
-				BT_Add_Key_or_Son(Father, p->Keyword[Mid], Brother);
+				BT_Add_Key_or_Son(Father, Keyword[Mid], Brother);
 				Brother->Parent = Father;
 				return Father;
 			}
 			else
 			{
-				BT_Add_Key_or_Son(p->Parent, p->Keyword[Mid], Brother);
-				Brother->Parent = p->Parent;
-				return BT_Split(p->Parent);
+				return BT_Add_And_Split(p->Parent, Keyword[Mid], Brother);
 			}
 		}
-		return p;
+		else
+		{
+			BT_Add_Key_or_Son(p, add_key, add_son);
+			return p;
+		}
 	}
 	else
 	{
-		printf("BT_Split: p is NULL");
-		return NULL;
+		printf("BT_Add: p is NULL");
+		return p;
 	}
 }
 BT_Tree     BT_Insert(BT_ElementType x, BT_Tree T)
@@ -329,6 +381,7 @@ BT_Tree     BT_Insert(BT_ElementType x, BT_Tree T)
 	else
 	{
 		BT_Position Pos_insert = T;
+
 		int index;
 		while (BT_Is_leaf(Pos_insert) == BT_false)
 		{
@@ -343,21 +396,20 @@ BT_Tree     BT_Insert(BT_ElementType x, BT_Tree T)
 			}
 			Pos_insert = Pos_insert->Son[index];
 		}
-		if (Pos_insert->Keyword_Num < LEAF_N_MAX)
-		{
+		
+		if (BT_Is_Full(Pos_insert)==BT_false)
+		{					
 			BT_Add_Key_or_Son(Pos_insert, x, NULL);
+		}
+		else if (BT_Is_root(Pos_insert) && BT_Is_Full(Pos_insert) == BT_true)
+		{
+			Pos_insert = BT_Add_And_Split(Pos_insert, x, NULL);
 		}
 		else
 		{
-			if (BT_Is_root(Pos_insert) == BT_true)
+			if(BT_Leaf_Key_Move_Insert(x, Pos_insert->Parent, index) == BT_false)
 			{
-				Pos_insert = BT_Split(Pos_insert);
-				BT_Insert(x, Pos_insert);
-			}
-			else if (BT_Leaf_Key_Move_Insert(x, Pos_insert->Parent, index) == BT_false)
-			{
-				Pos_insert = BT_Split(Pos_insert);
-				BT_Insert(x, Pos_insert);
+				Pos_insert = BT_Add_And_Split(Pos_insert, x, NULL);
 			}
 		}
 		BT_Tree temp = T;
@@ -383,8 +435,6 @@ void        BT_Display(BT_Tree T)
 		}
 	}
 }
-
-
 
 int BT_Num_In_Array(int* a, int num, int n)
 {
