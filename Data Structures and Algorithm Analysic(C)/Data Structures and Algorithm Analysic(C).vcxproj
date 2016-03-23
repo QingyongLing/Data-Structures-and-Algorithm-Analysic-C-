@@ -83,6 +83,7 @@
     <ClInclude Include="P4.4_AVL_tree.h" />
     <ClInclude Include="P4.5_Splay_Tree.h" />
     <ClInclude Include="P4.7_B_Tree.h" />
+    <ClInclude Include="P5.3_Separate_Chaining_Hashing.h" />
     <ClInclude Include="Q2.12a.h" />
   </ItemGroup>
   <ItemGroup>
@@ -90,6 +91,8 @@
     <ClCompile Include="Draw_Binary_Tree.c" />
     <ClCompile Include="P4.3_binary_search_tree.c" />
     <ClCompile Include="P4.4_AVL_tree.c" />
+    <ClCompile Include="P4.7_B_Tree.c" />
+    <ClCompile Include="P5.3_Separate_Chaining_Hashing.c" />
     <ClCompile Include="Splay_Tree.c" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

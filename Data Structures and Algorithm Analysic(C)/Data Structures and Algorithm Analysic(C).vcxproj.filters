@@ -36,6 +36,9 @@
     <ClInclude Include="CommonNode.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="P5.3_Separate_Chaining_Hashing.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="demo.c">
@@ -51,6 +54,12 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="Draw_Binary_Tree.c">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="P4.7_B_Tree.c">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="P5.3_Separate_Chaining_Hashing.c">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
