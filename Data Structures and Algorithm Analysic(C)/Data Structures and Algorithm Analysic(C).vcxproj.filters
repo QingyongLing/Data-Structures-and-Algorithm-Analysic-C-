@@ -39,6 +39,15 @@
     <ClInclude Include="P5.3_Separate_Chaining_Hashing.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="P6.3_binary_heap.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Draw_Heap.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="P6.5_D_Heap.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="demo.c">
@@ -60,6 +69,15 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="P5.3_Separate_Chaining_Hashing.c">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="P6.3_binary_heap.c">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Draw_Heap.c">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="P6.5_D_Heap.c">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

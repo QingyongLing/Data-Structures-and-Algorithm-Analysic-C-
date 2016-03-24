@@ -445,7 +445,7 @@ void B_Tree_Test2()
 	for (int i = 0; i < B_N;)
 	{
 		int temp = rand() % 100 + 1;
-		if (ST_Num_In_Array(num, temp, i) == 0)
+		if (BT_Num_In_Array(num, temp, i) == 0)
 			num[i++] = temp;
 	}
 

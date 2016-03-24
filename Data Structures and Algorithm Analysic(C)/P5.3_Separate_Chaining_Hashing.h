@@ -26,4 +26,7 @@ void         SC_DestroyTable(SC_HashTable H);
 SC_Position  SC_Find(SC_Element_Type key, SC_HashTable H);
 void         SC_Insert(SC_Element_Type key, SC_HashTable H);
 
+int          SC_Hash(SC_Element_Type key, int TableSizle);
+
+void         SC_Test();
 #endif
