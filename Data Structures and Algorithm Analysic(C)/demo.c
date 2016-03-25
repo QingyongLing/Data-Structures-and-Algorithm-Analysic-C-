@@ -8,6 +8,10 @@
 #include "P4.7_B_Tree.h"
 #include "P5.3_Separate_Chaining_Hashing.h"
 #include "p6.3_binary_heap.h"
+#include "P6.5_D_Heap.h"
+#include "P6.6_Leftist_Heap.h"
+#include "P6.7_Skew_heap.h"
+#include "P6.8_Binomial_Queue.h"
 
 void GraphvizDrawAVL()
 {
@@ -50,7 +54,11 @@ int main(int argc, char **argv)
 	//GraphvizDrawAVL();
 	//B_Tree_Test2();
 	//SC_Test();
-	BH_Test();
+	//BH_Test();
+	//DH_Test();
+	//LH_Leftist_Heap_Test();
+	//SH_Skew_Heap_Test();
+	BQ_Test();
 	system("pause");  
 	return 0;
 }

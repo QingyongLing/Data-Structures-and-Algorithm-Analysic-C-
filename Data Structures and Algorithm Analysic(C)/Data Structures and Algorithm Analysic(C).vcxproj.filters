@@ -48,6 +48,15 @@
     <ClInclude Include="P6.5_D_Heap.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="P6.6_Leftist_Heap.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="P6.7_Skew_Heap.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="P6.8_Binomial_Queue.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="demo.c">
@@ -78,6 +87,15 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="P6.5_D_Heap.c">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="P6.6_Leftist_Heap.c">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="P6.7_Skew_heap.c">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="P6.8_Binomial_Queue.c">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
