@@ -90,6 +90,7 @@
     <ClInclude Include="P6.6_Leftist_Heap.h" />
     <ClInclude Include="P6.7_Skew_Heap.h" />
     <ClInclude Include="P6.8_Binomial_Queue.h" />
+    <ClInclude Include="P7Sort.h" />
     <ClInclude Include="Q2.12a.h" />
   </ItemGroup>
   <ItemGroup>
@@ -105,6 +106,7 @@
     <ClCompile Include="P6.6_Leftist_Heap.c" />
     <ClCompile Include="P6.7_Skew_heap.c" />
     <ClCompile Include="P6.8_Binomial_Queue.c" />
+    <ClCompile Include="P7Sort.c" />
     <ClCompile Include="Splay_Tree.c" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

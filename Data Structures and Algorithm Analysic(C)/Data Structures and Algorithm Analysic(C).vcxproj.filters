@@ -57,6 +57,9 @@
     <ClInclude Include="P6.8_Binomial_Queue.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="P7Sort.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="demo.c">
@@ -96,6 +99,9 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="P6.8_Binomial_Queue.c">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="P7Sort.c">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
