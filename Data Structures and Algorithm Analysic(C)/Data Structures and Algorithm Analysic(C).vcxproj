@@ -80,6 +80,7 @@
     <ClInclude Include="CommonNode.h" />
     <ClInclude Include="Draw_Binary_Tree.h" />
     <ClInclude Include="Draw_Heap.h" />
+    <ClInclude Include="P12.1_T_Splay_Tree.h" />
     <ClInclude Include="P4.3_binary_search_tree.h" />
     <ClInclude Include="P4.4_AVL_tree.h" />
     <ClInclude Include="P4.5_Splay_Tree.h" />
