@@ -63,6 +63,9 @@
     <ClInclude Include="P12.1_T_Splay_Tree.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="P12.2_Red_Black_Tree.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="demo.c">
@@ -105,6 +108,9 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="P7Sort.c">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="P12.1_T_Splay_Tree.c">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

@@ -12,6 +12,7 @@
 #include "P6.6_Leftist_Heap.h"
 #include "P6.7_Skew_heap.h"
 #include "P6.8_Binomial_Queue.h"
+#include "P12.1_T_Splay_Tree.h"
 
 void GraphvizDrawAVL()
 {
@@ -58,7 +59,8 @@ int main(int argc, char **argv)
 	//DH_Test();
 	//LH_Leftist_Heap_Test();
 	//SH_Skew_Heap_Test();
-	BQ_Test();
+	//BQ_Test();
+	TST_Test();
 	system("pause");  
 	return 0;
 }

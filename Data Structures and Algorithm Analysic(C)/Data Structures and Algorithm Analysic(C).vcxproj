@@ -81,6 +81,7 @@
     <ClInclude Include="Draw_Binary_Tree.h" />
     <ClInclude Include="Draw_Heap.h" />
     <ClInclude Include="P12.1_T_Splay_Tree.h" />
+    <ClInclude Include="P12.2_Red_Black_Tree.h" />
     <ClInclude Include="P4.3_binary_search_tree.h" />
     <ClInclude Include="P4.4_AVL_tree.h" />
     <ClInclude Include="P4.5_Splay_Tree.h" />
@@ -98,6 +99,7 @@
     <ClCompile Include="demo.c" />
     <ClCompile Include="Draw_Binary_Tree.c" />
     <ClCompile Include="Draw_Heap.c" />
+    <ClCompile Include="P12.1_T_Splay_Tree.c" />
     <ClCompile Include="P4.3_binary_search_tree.c" />
     <ClCompile Include="P4.4_AVL_tree.c" />
     <ClCompile Include="P4.7_B_Tree.c" />
