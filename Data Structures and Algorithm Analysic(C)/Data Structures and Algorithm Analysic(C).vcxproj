@@ -100,6 +100,7 @@
     <ClCompile Include="Draw_Binary_Tree.c" />
     <ClCompile Include="Draw_Heap.c" />
     <ClCompile Include="P12.1_T_Splay_Tree.c" />
+    <ClCompile Include="P12.2_Red_Black_Tree.c" />
     <ClCompile Include="P4.3_binary_search_tree.c" />
     <ClCompile Include="P4.4_AVL_tree.c" />
     <ClCompile Include="P4.7_B_Tree.c" />
