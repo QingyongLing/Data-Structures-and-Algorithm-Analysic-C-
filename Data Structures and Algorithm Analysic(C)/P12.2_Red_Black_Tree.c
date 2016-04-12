@@ -41,11 +41,13 @@ static void HandleReorient(RB_ElementType x, RedBlackTree T)
 	if (P->Color == RB_Red)
 	{
 		GP->Color = RB_Red;
+		/*double rotate*/
 		if ((x < GP->Element) != (x < P->Element))
 			P = Rotate(x, GP);
 		X = Rotate(x, GGP);
 		X->Color = RB_Black;
 	}
+	/*Root should be black*/
 	T->Right->Color = RB_Black;
 }
 RedBlackTree  RB_Initialize(void)
@@ -85,6 +87,7 @@ RedBlackTree  RB_Insert(RB_ElementType x, RedBlackTree T)
 			X = X->Left;
 		else
 			X = X->Right;
+		/*if X has two red son,change the color*/
 		if (X->Left->Color == RB_Red&&X->Right->Color == RB_Red)
 			HandleReorient(x, T);
 	}
