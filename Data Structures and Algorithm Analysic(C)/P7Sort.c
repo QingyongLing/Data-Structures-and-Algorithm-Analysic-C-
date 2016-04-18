@@ -44,7 +44,7 @@ static void PerDown(Sort_Element_Type A[], int i, int N)
 	Sort_Element_Type Tmp;
 	for (Tmp = A[i]; Heap_Sort_Left_Child(i) < N; i = Child)
 	{
-		Child = Heap_Sort_Left_Child(i);
+		Child = Heap_Sort_Left_Child(i); 
 		if (Child != N - 1 && A[Child + 1] > A[Child])
 			Child++;
 		if (Tmp < A[Child])
@@ -57,7 +57,7 @@ static void PerDown(Sort_Element_Type A[], int i, int N)
 void    Heap_Sort(Sort_Element_Type A[], int N)
 {
 	int i;
-	/*Build Heap*/
+	/*Build Heap*/  
 	for (i = N / 2; i >= 0; i--)
 		PerDown(A, i, N);
 	/*Delete Max*/

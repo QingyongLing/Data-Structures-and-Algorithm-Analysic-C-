@@ -789,6 +789,180 @@ ST_Tree     ST_Delete(SPLAY_ElementType x, ST_Tree T)
 #### 2.5 B树
       
 
+#### 3 优先队列
+3.1  二叉堆     
+二叉堆有两个性质，即结构性和堆序性      
+结构性：堆是一棵被完全填满的二叉树，有可能的例外是在底层，底层上的元素从左到右填这样的树称为完全二叉树。    
+堆序性：在一个堆中，对于每个节点x，x的父亲节点中的关键字小于（或等于）x中的关键字，根节点除外。（min堆）     
+对于插入元素：采用上滤策略，新元素在堆中上滤找到正确的位置     
+删除：删除是删除根节点，采用下滤策略，删除最值以后迭代从子节点中选取最小（最大）的值放到删除点位置，直到最后一个节点可以满足堆序        
+在实现时可以采用数组实现，将根节点放入a[1],那么子节点为a[2],a[3],对于a[n]，子节点为a[2n],a[2n+1]。        
+如果要插入的元素需要上滤到根处，那么这种插入时间高达O(log N)，平均来看这种上滤终止的要早，业已证明，执行一次插入平均需要2.607次比较（常数啊）。
+DeleteMin：O(log N)      
+```c
+void             BH_Insert(BH_ElementType x, BH_PriorityQueue H)
+{
+	int i;
+	if (BH_Full(H))
+	{
+		printf("Priority queue is full");
+		return;
+	}
+	for (i = ++H->Size; H->Elements[i / 2] > x; i /= 2)
+		H->Elements[i] = H->Elements[i / 2];
+	H->Elements[i] = x;
+}
+```
+插入操作先将根据新值确定位置，然后再将值放入，整个堆相当于多路的有序数的集合，只是大小关系只与节点之间的父子关系相关。         
+```c
+BH_ElementType   BH_DeleteMin(BH_PriorityQueue H)
+{
+	int i, child;
+	BH_ElementType MinElement, LastElement;
+	if (BH_IsEmpty(H))
+	{
+		printf("Priority queue is empty");
+		return H->Elements[0];
+	}
+	MinElement = H->Elements[1];
+	LastElement = H->Elements[H->Size--];
+
+	for (i = 1; i * 2 <= H->Size; i = child)
+	{
+		child = i * 2;
+		if (child != H->Size&&H->Elements[child + 1] < H->Elements[child])
+			child++;
+
+		if (LastElement > H->Elements[child])
+			H->Elements[i] = H->Elements[child];
+		else
+			break;
+	}
+	H->Elements[i] = LastElement;
+	return MinElement;
+}
+```
+在删除时，删掉根节点，将size-1，保存最后一个元素值，然后根据堆序选取合适的子节点代替父节点，直到找到合适的位置放置最后位置节点。     
+
+3.1 d堆      
+d堆类似于二叉堆，只是节点的儿子数目为d，对于一个d堆，插入的操作为O(logN/logd),但是对于大的d删除则要耗费更多时间，如果使用标准的算法，需要比较d-1次，耗时O(dlogN/logd)。      
+对于d堆来说，堆之间的合并操作比较耗时。    
+对于d堆满足：son=[d*i-k+2,d*i+1] father=i，因此插入满足：    
+```c
+	for (i = ++H->Size; H->Elements[(i + DH_D - 2) / DH_D] > x; i = (i + DH_D - 2) / DH_D)
+		H->Elements[i] = H->Elements[(i + DH_D - 2) / DH_D];
+ 	H->Elements[i] = x;
+```
+删除同理。     
+
+3.2 左式堆     
+像二叉堆那样，左式堆也具有结构性和有序性，事实上，和所有使用的堆一样，左式堆具有相同的堆序性质。左式堆和二叉堆的唯一区别就是左式堆不是理想平衡的，而实际上是趋于非常不平衡。      
+我们把任一节点x的零路径长定义为从x到一个没有两个儿子的节点的最短路径长。左式堆的性质是：对于堆中每一个节点x，左儿子的零路径长至少与右儿子的零路径长一样大。这个性质实际上超出了它确保树不平衡的要求，
+因为它显然更偏重于使树向左增加深度。事实上，沿着左式堆的右路径确实是该堆中最短的路径。        
+左式堆的合并：将具有较大的根值的堆与具有较小的根值的堆的右子堆合并，在合并完成后根据左右子堆的零路径长是否满足要求进行调整，递归上述步骤直到根节点。     
+执行合并的时间与右路径的长的和成正比，因为在递归调用期间对每一个被访问的节点执行的是常数工作量，因此，我们得到合并两个左式堆的时间界为O(logN)。         
+```c
+LH_PriorityQueue LH_Merge(LH_PriorityQueue H1, LH_PriorityQueue H2)
+{
+	if ((H1 == NULL) | (H2 == NULL))
+		return H1 == NULL ? H2 : H1;
+	if (H1->Element < H2->Element)
+		return LH_Merge1(H1, H2);
+	else
+		return LH_Merge1(H2, H1);
+}
+static LH_PriorityQueue LH_Merge1(LH_PriorityQueue H1, LH_PriorityQueue H2)
+{
+	if (H1->Left == NULL)
+		H1->Left = H2;
+	else
+	{
+		H1->Right = LH_Merge(H1->Right, H2);
+		if (H1->Left->Npl < H1->Right->Npl)
+		{
+			LH_PriorityQueue temp = H1->Left;
+			H1->Left = H1->Right;
+			H1->Right = temp;
+		}
+		H1->Npl = H1->Right->Npl + 1;
+	}
+	return H1;
+}
+```
+对于插入和删除操作可以等效为，插入是一个既有的堆与一个只有一个节点的堆进行合并，删除等效为根节点的左右子堆进行合并。          
+```c
+LH_PriorityQueue LH_Insert1(LH_ElementType x, LH_PriorityQueue H)
+{
+	
+	LH_PriorityQueue SingleNode;
+	SingleNode = malloc(sizeof(struct LH_Heap_Node));
+	if (SingleNode == NULL)
+		printf("Out of space!");
+	else
+	{
+		SingleNode->Element = x;
+		SingleNode->Npl = 0;
+		SingleNode->Left = NULL;
+		SingleNode->Right = NULL;
+		H = LH_Merge(SingleNode, H);	
+	}
+	return H;
+}
+LH_PriorityQueue LH_DeleteMin1(LH_PriorityQueue H)
+{
+	LH_PriorityQueue LeftHeap, RinghtHeap;
+	if (LH_IsEmpty(H))
+	{
+		printf("Priority queue is empty!");
+		return H;
+	}
+	LeftHeap = H->Left;
+	RinghtHeap = H->Right;
+	free(H);
+	return LH_Merge(LeftHeap, RinghtHeap);
+}
+```
+
+3.3  斜堆     
+斜堆是左式堆的自调节形式，实现起来简单。斜堆和左式堆的关系类似于伸展树和AVL树间的关系。斜堆是具有堆序的二叉树，但是不存在对树的结构限制，不同于左式堆，关于任意节点的零路径长的任何信息都不保留。      
+斜堆的右路径在任何时刻都可以任意长，因此，所有操作的最坏情形运行时间均为O(N),然而，正如伸展树一样，任意M次连续操作，总的最坏情形运行时间是O(MlogN),因此，斜堆每次操作的摊还时间为O(log N)。     
+与左式堆相比，斜堆的基本操作也是合并，对于左式堆，我们查看左右儿子的零路径长，交换不满足左式堆性质的节点的左右儿子，但对于斜堆，除了右路径上所有节点的最大者不交换他们的左右儿子外，交换是无条件的。          
+右路径上的最大节点：根据合并递归的原则，两个堆选取根节点较大的与较小的堆的右儿子进行合并，递归到最后变成两个堆中右儿子的最大值跟一个子堆（或者null）的合并，因此直接连接即可，无须进行交换操作。       
+合并操作的代码为：       
+```c
+SH_PriorityQueue SH_Merge(SH_PriorityQueue H1, SH_PriorityQueue H2)
+{
+	if (H1 == NULL)
+		return H2;
+	if (H2 == NULL)
+		return H1;
+	if (H1->Element < H2->Element)
+		return SH_Merge1(H1, H2);
+	else
+		return SH_Merge1(H2, H1);
+}
+static SH_PriorityQueue SH_Merge1(SH_PriorityQueue H1, SH_PriorityQueue H2)
+{
+	if (H1->Left == NULL)
+		H1->Left = H2;
+	else
+	{
+		H1->Right = SH_Merge(H1->Right, H2);
+		SH_PriorityQueue temp = H1->Left;
+		H1->Left = H1->Right;
+		H1->Right = temp;
+	}
+	return H1;
+}
+```
+斜堆的删除和插入和左式堆相同，同样是执行合并操作。       
+
+3.4  二项队列       
+虽然堆和斜堆每次操作花费O(log N)时间，这有效地支持了合并、插入和DeleteMin，但是还有改进的余地。
+
+
+
+
 
 
 
